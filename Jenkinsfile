@@ -1,0 +1,36 @@
+```groovy
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                bat '.\\gradlew.bat clean build'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                bat '.\\gradlew.bat test'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Build and tests completed successfully!'
+        }
+
+        failure {
+            echo 'Build or tests failed!'
+        }
+    }
+}
+```
