@@ -1,4 +1,3 @@
-
 pipeline {
     agent any
 
@@ -40,11 +39,17 @@ pipeline {
                 }
             }
         }
+
+        stage('Deploy') {
+            steps {
+                bat 'docker run --rm subhramukti/image2:latest'
+            }
+        }
     }
 
     post {
         success {
-            echo 'Build, tests, Docker image build and Docker Hub push completed successfully!'
+            echo 'Build, tests, Docker image build, Docker Hub push and deployment completed successfully!'
         }
 
         failure {
@@ -52,4 +57,3 @@ pipeline {
         }
     }
 }
-
