@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
 
@@ -20,15 +21,35 @@ pipeline {
                 bat '.\\gradlew.bat test'
             }
         }
+
+        stage('Docker Build') {
+            steps {
+                bat 'docker build -t subhramukti/image2:latest .'
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-credentials',
+                    usernameVariable: 'DOCKER_USERNAME',
+                    passwordVariable: 'DOCKER_PASSWORD'
+                )]) {
+                    bat 'echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin'
+                    bat 'docker push subhramukti/image2:latest'
+                }
+            }
+        }
     }
 
     post {
         success {
-            echo 'Build and tests completed successfully!'
+            echo 'Build, tests, Docker image build and Docker Hub push completed successfully!'
         }
 
         failure {
-            echo 'Build or tests failed!'
+            echo 'Pipeline failed!'
         }
     }
 }
+
